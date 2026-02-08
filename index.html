@@ -51,6 +51,9 @@
         font-weight: 800;
         margin: 24px 0 8px;
       }
+      .brand-title {
+        color: var(--accent);
+      }
       .subtitle {
         color: var(--muted);
         margin: 0 0 24px;
@@ -104,12 +107,68 @@
       .screen.active {
         display: block;
       }
+      #intro.active {
+        min-height: 640px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 16px;
+      }
       .welcome-card {
-        margin-top: 18px;
+        margin: 0 auto;
+        max-width: 340px;
+        text-align: center;
       }
       .welcome-body {
         color: var(--muted);
         line-height: 1.4;
+        margin: 12px 0 0;
+      }
+      #welcome.active {
+        min-height: 640px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 16px;
+      }
+      #welcome .title,
+      #welcome .subtitle,
+      #welcome .privacy {
+        text-align: center;
+      }
+      .logo-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 6px 0 20px;
+      }
+      .drop-wrap {
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+      svg.drop {
+        width: 56px;
+        height: 78px;
+      }
+      @keyframes fall {
+        0% {
+          transform: translateX(-40px) translateY(-90px) scale(0.92);
+        }
+        70% {
+          transform: translateX(8px) translateY(4px) scale(1.02);
+        }
+        100% {
+          transform: translateX(8px) translateY(-2px) scale(1);
+        }
+      }
+      .drop-anim {
+        animation: fall 1.2s cubic-bezier(.22, .9, .15, 1) forwards;
       }
       .header {
         margin: 8px 0 16px;
@@ -192,22 +251,108 @@
         font-size: 12px;
         color: var(--muted);
       }
-      .attribution {
-        margin-top: 12px;
+      .tabs {
+        position: sticky;
+        bottom: 0;
+        margin-top: 16px;
         display: flex;
-        align-items: center;
         gap: 10px;
-        font-size: 12px;
-        color: var(--muted);
+        padding: 10px;
+        background: #f6ebe6;
+        border-radius: 16px;
+        box-shadow: 0 -6px 16px rgba(61, 51, 47, 0.08);
       }
-      .attribution img {
-        height: 22px;
-        width: auto;
+      .tabs.hidden {
+        display: none;
       }
-      .attribution a {
-        color: inherit;
+      .tab {
+        flex: 1;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 8px;
+        font-weight: 700;
+        background: #f0dfd9;
+        color: #3d332f;
+        cursor: pointer;
+      }
+      .tab.active {
+        background: var(--accent);
+        color: #fff;
+      }
+      .resources-card {
+        display: grid;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .resource-group h3 {
+        margin: 0 0 8px;
+      }
+      .resource-subgroup {
+        margin-top: 12px;
+      }
+      .resource-links {
+        display: grid;
+        gap: 8px;
+        padding-left: 0;
+        list-style: none;
+        margin: 0;
+      }
+      .resource-links a {
+        color: #2b2320;
         text-decoration: none;
         font-weight: 600;
+      }
+      .resource-links a:hover {
+        text-decoration: underline;
+      }
+      .flow-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .flow-btn {
+        border: none;
+        background: #f0dfd9;
+        color: #3d332f;
+        padding: 10px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .flow-btn.active {
+        background: var(--accent);
+        color: #fff;
+      }
+      .mood-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .mood-btn {
+        border: none;
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 0;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(61, 51, 47, 0.08);
+      }
+      .mood-btn.active {
+        background: #ffe7e1;
+        box-shadow: 0 6px 16px rgba(232, 106, 95, 0.25);
+      }
+      .symptom-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .symptom {
+        display: grid;
+        gap: 6px;
+        font-weight: 700;
+        color: #3d332f;
       }
     </style>
   </head>
@@ -215,10 +360,21 @@
     <div class="phone-frame">
       <div class="phone">
         <div class="app">
-          <section id="welcome" class="screen active">
-            <div class="title">HeyLucy!</div>
-            <div class="subtitle">Your personalized women’s health companion.</div>
+          <section id="intro" class="screen active">
+            <div class="logo-stage" aria-hidden="true">
+              <div class="drop-wrap">
+                <svg class="drop drop-anim" viewBox="0 0 50 70" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M25 4 C12 28 8 44 8 56 C8 66 16 72 25 72 C34 72 42 66 42 56 C42 44 38 28 25 4 Z" fill="#DC143C" />
+                </svg>
+              </div>
+            </div>
+            <div class="title brand-title">HeyLucy!</div>
+          </section>
+
+          <section id="welcome" class="screen">
             <div class="card welcome-card">
+              <div class="title brand-title">HeyLucy!</div>
+              <div class="subtitle">Your personalized women’s health companion.</div>
               <div class="welcome-body">
                 Lucy is your personalized women’s health consultant that informs, tracks, and helps you
                 navigate your menstrual health with clarity and care.
@@ -261,23 +417,143 @@
               </div>
             </div>
 
-        <div class="card insight" id="insightCard"></div>
-        <div class="attribution">
-          <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
-            <img
-              src="https://odphp.health.gov/sites/default/files/2020-01/myhealthfinder_logo.jpg"
-              alt="MyHealthfinder logo"
-            />
-          </a>
-          <div>
-            Content source:
-            <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
-              odphp.health.gov/myhealthfinder
-            </a>
-          </div>
-        </div>
-        <div class="note">Educational content only. This app does not provide medical diagnosis or treatment.</div>
-      </section>
+            <div class="card insight" id="insightCard"></div>
+            <div class="attribution">
+              <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
+                <img
+                  src="https://odphp.health.gov/sites/default/files/2020-01/myhealthfinder_logo.jpg"
+                  alt="MyHealthfinder logo"
+                />
+              </a>
+              <div>
+                Content source:
+                <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
+                  odphp.health.gov/myhealthfinder
+                </a>
+              </div>
+            </div>
+            <div class="note">Educational content only. This app does not provide medical diagnosis or treatment.</div>
+          </section>
+
+          <section id="track" class="screen">
+            <div class="title" style="font-size: 24px; margin-bottom: 4px;">Track</div>
+            <div class="subtitle">Log symptoms and notes for today.</div>
+            <div class="card">
+              <div class="section">Flow</div>
+              <div class="flow-buttons">
+                <button class="flow-btn" type="button">Light</button>
+                <button class="flow-btn" type="button">Medium</button>
+                <button class="flow-btn" type="button">Heavy</button>
+              </div>
+
+              <div class="section" style="margin-top: 12px;">How are you feeling?</div>
+              <div class="mood-row" aria-label="Mood rating">
+                <button class="mood-btn" type="button" aria-label="Very unhappy">😞</button>
+                <button class="mood-btn" type="button" aria-label="Unhappy">🙁</button>
+                <button class="mood-btn" type="button" aria-label="Slightly unhappy">😕</button>
+                <button class="mood-btn" type="button" aria-label="Meh">😐</button>
+                <button class="mood-btn" type="button" aria-label="Okay">🙂</button>
+                <button class="mood-btn" type="button" aria-label="Good">😊</button>
+                <button class="mood-btn" type="button" aria-label="Pretty good">😃</button>
+                <button class="mood-btn" type="button" aria-label="Happy">😄</button>
+                <button class="mood-btn" type="button" aria-label="Very happy">😁</button>
+                <button class="mood-btn" type="button" aria-label="Thrilled">🤩</button>
+              </div>
+
+              <div class="section" style="margin-top: 12px;">Symptoms (1–10)</div>
+              <div class="symptom-grid">
+                <label class="symptom">
+                  <span>Cramp Pain</span>
+                  <select class="input">
+                    <option value="">Select</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                    <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                  </select>
+                </label>
+                <label class="symptom">
+                  <span>Headaches</span>
+                  <select class="input">
+                    <option value="">Select</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                    <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                  </select>
+                </label>
+                <label class="symptom">
+                  <span>Sore Body</span>
+                  <select class="input">
+                    <option value="">Select</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                    <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                  </select>
+                </label>
+                <label class="symptom">
+                  <span>Bloating</span>
+                  <select class="input">
+                    <option value="">Select</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                    <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                  </select>
+                </label>
+                <label class="symptom">
+                  <span>Fatigue</span>
+                  <select class="input">
+                    <option value="">Select</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                    <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section id="resources" class="screen">
+            <div class="title" style="font-size: 24px; margin-bottom: 4px;">Resources</div>
+            <div class="subtitle">Reliable sources for mental and reproductive health.</div>
+            <div class="card resources-card">
+              <div class="resource-group">
+                <h3>Mental Health</h3>
+                <ul class="resource-links">
+                  <li><a href="https://www.cdc.gov/mental-health/caring/index.html" target="_blank" rel="noopener">CDC Mental Health Resources</a></li>
+                  <li><a href="https://womenshealth.gov/mental-health/mental-health-resources" target="_blank" rel="noopener">Office on Women’s Health: Mental Health Resources</a></li>
+                </ul>
+              </div>
+              <div class="resource-group">
+                <h3>Reproductive Health Care</h3>
+                <ul class="resource-links">
+                  <li><a href="https://www.cdc.gov/reproductivehealth/index.html" target="_blank" rel="noopener">CDC Reproductive Health Overview</a></li>
+                  <li><a href="https://womenshealth.gov/patient-materials/health-topic/reproductive-health" target="_blank" rel="noopener">Office on Women’s Health: Reproductive Health</a></li>
+                </ul>
+                <div class="resource-subgroup">
+                  <div class="section">Planned Parenthood</div>
+                  <ul class="resource-links">
+                    <li><a href="https://www.plannedparenthood.org/get-care/our-services" target="_blank" rel="noopener">Planned Parenthood Services</a></li>
+                  </ul>
+                </div>
+                <div class="resource-subgroup">
+                  <div class="section">Contraception</div>
+                  <ul class="resource-links">
+                    <li><a href="https://www.cdc.gov/contraception/index.html" target="_blank" rel="noopener">CDC Contraception (Birth Control Methods)</a></li>
+                    <li><a href="https://www.plannedparenthood.org/get-care/our-services/birth-control" target="_blank" rel="noopener">Planned Parenthood: Birth Control</a></li>
+                  </ul>
+                </div>
+                <div class="resource-subgroup">
+                  <div class="section">Infertility Treatment</div>
+                  <ul class="resource-links">
+                    <li><a href="https://www.cdc.gov/reproductive-health/infertility-faq/index.html" target="_blank" rel="noopener">CDC Infertility FAQ</a></li>
+                    <li><a href="https://www.cdc.gov/art/about/index.html" target="_blank" rel="noopener">CDC Assisted Reproductive Technology (ART)</a></li>
+                    <li><a href="https://womenshealth.gov/a-z-topics/infertility" target="_blank" rel="noopener">Office on Women’s Health: Infertility</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="note">Links open in a new tab. Information is educational and not a substitute for medical advice.</div>
+          </section>
+
+          <nav class="tabs hidden" aria-label="Primary">
+            <button class="tab active" data-target="calendar">Home</button>
+            <button class="tab" data-target="track">Track</button>
+            <button class="tab" data-target="resources">Resources</button>
+          </nav>
         </div>
       </div>
     </div>
@@ -285,8 +561,7 @@
     <script>
       // Placeholder educational content.
       // MyHealthfinder integration point:
-      // Replace this object with API-driven data from odphp.health.gov/myhealthfinder.
-      // Requirement: display the MyHealthfinder logo + link wherever content appears.
+      // Use the Vercel serverless proxy: /api/myhealthfinder
       const PHASE_INFO = {
         menstrual: {
           title: "Menstrual Phase",
@@ -318,35 +593,6 @@
         },
       };
 
-      // Live API endpoint (direct) is blocked by CORS in browsers.
-      // Use the Vercel serverless proxy instead:
-      // https://YOUR-VERCEL-APP.vercel.app/api/myhealthfinder?endpoint=itemlist&type=topic
-      let myHealthfinderData = null;
-      let myHealthfinderLoaded = false;
-      let myHealthfinderError = null;
-      const PHASE_TOPIC_IDS = {
-        menstrual: "30533", // Get Enough Sleep
-        follicular: "30547", // Get Active
-        ovulation: "30539", // Eat Healthy
-        luteal: "30560", // Manage Stress
-      };
-
-      async function loadMyHealthfinderData() {
-        if (myHealthfinderLoaded) return myHealthfinderData;
-        myHealthfinderLoaded = true;
-        try {
-          const res = await fetch("/api/myhealthfinder?endpoint=itemlist&type=topic");
-          if (!res.ok) throw new Error("MyHealthfinder request failed");
-          const json = await res.json();
-          myHealthfinderData = json;
-          return myHealthfinderData;
-        } catch (err) {
-          myHealthfinderError = "Unable to load MyHealthfinder content right now.";
-          myHealthfinderData = null;
-          return null;
-        }
-      }
-
       const COLORS = {
         menstrual: "var(--menstrual)",
         follicular: "var(--follicular)",
@@ -356,19 +602,30 @@
 
       const CYCLE_LENGTH = 28;
       const PERIOD_LENGTH = 5;
+      const PHASE_TOPIC_IDS = {
+        menstrual: "30533", // Get Enough Sleep
+        follicular: "30547", // Get Active
+        ovulation: "30539", // Eat Healthy
+        luteal: "30560", // Manage Stress
+      };
 
+      const intro = document.getElementById("intro");
       const welcome = document.getElementById("welcome");
       const input = document.getElementById("lastPeriod");
       const btn = document.getElementById("continueBtn");
       const beginBtn = document.getElementById("beginBtn");
       const onboarding = document.getElementById("onboarding");
       const calendar = document.getElementById("calendar");
+      const track = document.getElementById("track");
+      const resources = document.getElementById("resources");
+      const tabsContainer = document.querySelector(".tabs");
       const grid = document.getElementById("calendarGrid");
       const monthTitle = document.getElementById("monthTitle");
       const nextPeriodText = document.getElementById("nextPeriodText");
       const insightCard = document.getElementById("insightCard");
       const prevMonth = document.getElementById("prevMonth");
       const nextMonth = document.getElementById("nextMonth");
+      const tabs = Array.from(document.querySelectorAll(".tab"));
 
       let lastPeriodDate = null;
       let currentMonth = new Date();
@@ -430,6 +687,42 @@
         return rows;
       }
 
+      async function loadMyHealthfinderTopic(topicId) {
+        const res = await fetch(`/api/myhealthfinder?endpoint=topicsearch&topicId=${topicId}`);
+        if (!res.ok) throw new Error("MyHealthfinder topic request failed");
+        const json = await res.json();
+        const resource = json?.Result?.Resources?.Resource || null;
+        return Array.isArray(resource) ? resource[0] : resource;
+      }
+
+      function formatUpdatedDate(value) {
+        if (!value) return null;
+        const numeric = Number(value);
+        if (!Number.isNaN(numeric)) {
+          const ms = numeric < 1e12 ? numeric * 1000 : numeric;
+          const date = new Date(ms);
+          if (!Number.isNaN(date.getTime())) {
+            return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+          }
+        }
+        return String(value);
+      }
+
+      function extractShortSummary(detail) {
+        const text =
+          detail?.MyHFDescription ||
+          detail?.FullSummary ||
+          detail?.Summary ||
+          "";
+        if (!text) return [];
+        const normalized = text.replace(/\s+/g, " ").trim();
+        const sentences = normalized
+          .split(/(?<=[.?!])\s+/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return sentences.slice(0, 3);
+      }
+
       function renderCalendar() {
         grid.innerHTML = "";
         const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
@@ -467,79 +760,22 @@
         });
       }
 
-      function getMyHealthfinderTopicForPhase(phase, data) {
-        const list = data?.Result?.Items?.Item || [];
-        if (!list.length) return null;
-        const targetId = PHASE_TOPIC_IDS[phase];
-        const match = list.find((item) => item.Id === targetId);
-        return match || list[0];
-      }
-
-      function formatUpdatedDate(value) {
-        if (!value) return null;
-        const numeric = Number(value);
-        if (!Number.isNaN(numeric)) {
-          const ms = numeric < 1e12 ? numeric * 1000 : numeric;
-          const date = new Date(ms);
-          if (!Number.isNaN(date.getTime())) {
-            return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-          }
-        }
-        return String(value);
-      }
-
-      function extractBulletPoints(detail) {
-        const text =
-          detail?.MyHFDescription ||
-          detail?.FullSummary ||
-          detail?.Summary ||
-          "";
-        const sectionData = detail?.Sections?.Section || [];
-        const sections = Array.isArray(sectionData) ? sectionData : [sectionData].filter(Boolean);
-        const sectionPoints = sections
-          .map((s) => s.Description || s.Content || "")
-          .filter(Boolean);
-
-        const raw = text ? [text, ...sectionPoints].join(" ") : sectionPoints.join(" ");
-        if (!raw) return [];
-
-        const normalized = raw.replace(/\s+/g, " ").trim();
-        const rawPoints = normalized
-          .split(/(?<=[.?!])\s+/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-        return rawPoints.slice(0, 4);
-      }
-
-      async function loadMyHealthfinderTopicDetails(topicId) {
-        const res = await fetch(`/api/myhealthfinder?endpoint=topicsearch&topicId=${topicId}`);
-        if (!res.ok) throw new Error("MyHealthfinder topic request failed");
-        return res.json();
-      }
-
       async function renderInsight() {
         const phase = getPhase(lastPeriodDate, new Date());
         const info = PHASE_INFO[phase];
-        const data = await loadMyHealthfinderData();
-        const topic = getMyHealthfinderTopicForPhase(phase, data);
+        const topicId = PHASE_TOPIC_IDS[phase];
         let topicDetail = null;
-
-        if (topic?.Id) {
-          try {
-            const detailData = await loadMyHealthfinderTopicDetails(topic.Id);
-            const resource = detailData?.Result?.Resources?.Resource || null;
-            topicDetail = Array.isArray(resource) ? resource[0] : resource;
-          } catch (err) {
-            myHealthfinderError = "Unable to load MyHealthfinder topic details.";
-          }
+        try {
+          topicDetail = await loadMyHealthfinderTopic(topicId);
+        } catch (err) {
+          topicDetail = null;
         }
-
-        const detailTitle = topicDetail?.Title || topic?.Title;
-        const detailBullets = extractBulletPoints(topicDetail);
+        const detailTitle = topicDetail?.Title || "MyHealthfinder Topic";
         const detailLink = topicDetail?.AccessibleVersion || null;
-        const rawUpdated =
-          topicDetail?.LastUpdate || topicDetail?.LastUpdated || topicDetail?.LastModified || null;
-        const detailUpdated = formatUpdatedDate(rawUpdated);
+        const summaryLines = extractShortSummary(topicDetail);
+        const detailUpdated = formatUpdatedDate(
+          topicDetail?.LastUpdate || topicDetail?.LastUpdated || topicDetail?.LastModified || null
+        );
 
         insightCard.innerHTML = `
           <h3>${info.title}</h3>
@@ -550,15 +786,11 @@
           <div>${info.mental.join(", ")}</div>
           <div class="section">Hormonal Changes</div>
           <div>${info.hormones.join(", ")}</div>
+
+          <div class="section">MyHealthfinder: ${detailTitle}</div>
           ${
-            topic
-              ? `
-          <div class="section">MyHealthfinder: ${detailTitle || "Topic"}</div>
-          ${
-            detailBullets.length
-              ? `<ul style="margin: 8px 0 0 18px; color: var(--muted);">
-            ${detailBullets.map((b) => `<li>${b}</li>`).join("")}
-          </ul>`
+            summaryLines.length
+              ? `<div style="color: var(--muted);">${summaryLines.join(" ")}</div>`
               : `<div style="color: var(--muted);">Details are currently unavailable.</div>`
           }
           ${
@@ -573,12 +805,6 @@
           </div>`
               : ""
           }
-            `
-              : `
-          <div class="section">MyHealthfinder</div>
-          <div style="color: var(--muted);">${myHealthfinderError || "Unable to load topics right now."}</div>
-            `
-          }
         `;
       }
 
@@ -588,8 +814,45 @@
         nextPeriodText.textContent = `Next estimated period: ${formatISODate(next)}`;
       }
 
+      function setActiveTab(targetId) {
+        tabs.forEach((tab) => {
+          tab.classList.toggle("active", tab.dataset.target === targetId);
+        });
+      }
+
+      function showScreen(targetId) {
+        [intro, welcome, onboarding, calendar, track, resources].forEach((screen) => {
+          screen.classList.remove("active");
+        });
+
+        const resolved =
+          targetId !== "welcome" && targetId !== "intro" && !lastPeriodDate
+            ? "onboarding"
+            : targetId;
+        document.getElementById(resolved).classList.add("active");
+        if (tabsContainer) {
+          tabsContainer.classList.toggle("hidden", !lastPeriodDate);
+        }
+        setActiveTab(resolved === "onboarding" ? "calendar" : resolved);
+
+        if (resolved === "calendar" && lastPeriodDate) {
+          renderCalendar();
+          renderInsight();
+          renderNextPeriod();
+        }
+      }
+
       function scheduleReminderMock(iso) {
         console.log(`[HeyLucy] Scheduled reminder based on last period date: ${iso}`);
+      }
+
+      function playLogoAnimation() {
+        const drop = document.querySelector(".drop");
+        if (drop) {
+          drop.classList.remove("drop-anim");
+          void drop.offsetWidth;
+          drop.classList.add("drop-anim");
+        }
       }
 
       function formatMMDDYYYYInput(raw) {
@@ -603,12 +866,19 @@
         return parts.join("-");
       }
 
+      function goToWelcome() {
+        showScreen("welcome");
+      }
+
+      playLogoAnimation();
+
+      intro.addEventListener("click", goToWelcome);
+      window.setTimeout(goToWelcome, 1400);
+
       beginBtn.addEventListener("click", () => {
-        welcome.classList.remove("active");
-        onboarding.classList.add("active");
+        showScreen("onboarding");
         input.focus();
       });
-
       input.addEventListener("input", (e) => {
         const formatted = formatMMDDYYYYInput(e.target.value);
         e.target.value = formatted;
@@ -625,11 +895,7 @@
         const date = parseMMDDYYYY(input.value.trim());
         if (!date) return;
         lastPeriodDate = date;
-        onboarding.classList.remove("active");
-        calendar.classList.add("active");
-        renderCalendar();
-        renderInsight();
-        renderNextPeriod();
+        showScreen("calendar");
         scheduleReminderMock(input.value.trim());
       });
 
@@ -641,6 +907,30 @@
       nextMonth.addEventListener("click", () => {
         currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
         renderCalendar();
+      });
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.target;
+          if (!target) return;
+          showScreen(target);
+        });
+      });
+
+      const flowButtons = Array.from(document.querySelectorAll(".flow-btn"));
+      flowButtons.forEach((btnEl) => {
+        btnEl.addEventListener("click", () => {
+          flowButtons.forEach((b) => b.classList.remove("active"));
+          btnEl.classList.add("active");
+        });
+      });
+
+      const moodButtons = Array.from(document.querySelectorAll(".mood-btn"));
+      moodButtons.forEach((btnEl) => {
+        btnEl.addEventListener("click", () => {
+          moodButtons.forEach((b) => b.classList.remove("active"));
+          btnEl.classList.add("active");
+        });
       });
     </script>
   </body>
