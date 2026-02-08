@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HeyLucy! MVP Preview</title>
+    <style>
+      :root {
+        --bg: #f8f3f0;
+        --card: #fff9f5;
+        --text: #2b2320;
+        --muted: #6b5e57;
+        --accent: #e86a5f;
+        --accent-soft: #e3b1ac;
+        --menstrual: #f28b82;
+        --follicular: #fad9a7;
+        --ovulation: #b7e1cd;
+        --luteal: #aecbfa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Nunito", "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #f8f3f0 0%, #f3e7e1 100%);
+        color: var(--text);
+      }
+      .app {
+        max-width: 420px;
+        margin: 0 auto;
+        min-height: 100vh;
+        padding: 20px 16px 32px;
+      }
+      .phone-frame {
+        max-width: 430px;
+        margin: 24px auto;
+        border-radius: 28px;
+        padding: 16px;
+        background: #f2e7e1;
+        box-shadow: 0 20px 60px rgba(61, 51, 47, 0.2);
+      }
+      .phone {
+        background: linear-gradient(180deg, #f8f3f0 0%, #f3e7e1 100%);
+        border-radius: 24px;
+        overflow: hidden;
+        min-height: 720px;
+      }
+      .title {
+        font-size: 34px;
+        font-weight: 800;
+        margin: 24px 0 8px;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 8px 24px rgba(61, 51, 47, 0.06);
+      }
+      .label {
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #e5d7d2;
+        background: #fff;
+        font-size: 16px;
+      }
+      .helper {
+        font-size: 13px;
+        color: #7c6f68;
+        margin: 8px 0 16px;
+      }
+      .btn {
+        width: 100%;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        background: var(--accent-soft);
+        cursor: not-allowed;
+      }
+      .privacy {
+        font-size: 12px;
+        color: #7c6f68;
+        margin-top: 16px;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      .welcome-card {
+        margin-top: 18px;
+      }
+      .welcome-body {
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .header {
+        margin: 8px 0 16px;
+      }
+      .calendar-card {
+        margin-top: 8px;
+      }
+      .month-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .month-title {
+        font-weight: 700;
+      }
+      .month-btn {
+        background: #f1e3dd;
+        border: none;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #3d332f;
+      }
+      .week-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .weekday {
+        text-align: center;
+        font-weight: 700;
+        color: #7c6f68;
+      }
+      .day {
+        height: 38px;
+        width: 100%;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #2b2320;
+      }
+      .legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 12px;
+        color: #7c6f68;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .insight {
+        margin-top: 16px;
+      }
+      .insight h3 {
+        margin: 0 0 4px;
+      }
+      .section {
+        margin-top: 10px;
+        font-weight: 700;
+      }
+      .note {
+        margin-top: 12px;
+        background: #fff1ea;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .attribution {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .attribution img {
+        height: 22px;
+        width: auto;
+      }
+      .attribution a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-frame">
+      <div class="phone">
+        <div class="app">
+          <section id="welcome" class="screen active">
+            <div class="title">HeyLucy!</div>
+            <div class="subtitle">Your personalized women’s health companion.</div>
+            <div class="card welcome-card">
+              <div class="welcome-body">
+                Lucy is your personalized women’s health consultant that informs, tracks, and helps you
+                navigate your menstrual health with clarity and care.
+              </div>
+              <div class="helper">Educational only. No medical diagnosis or treatment.</div>
+              <button id="beginBtn" class="btn">Begin</button>
+            </div>
+            <div class="privacy">Privacy first: your data stays on your device for this MVP.</div>
+          </section>
+
+          <section id="onboarding" class="screen">
+            <div class="title">Let’s get started</div>
+            <div class="subtitle">Tell us when your last period began.</div>
+            <div class="card">
+              <label class="label" for="lastPeriod">First day of your last period</label>
+              <input id="lastPeriod" class="input" placeholder="MM-DD-YYYY" inputmode="numeric" />
+              <div class="helper">We use this to estimate your cycle. You can update it later.</div>
+              <button id="continueBtn" class="btn" disabled>Continue</button>
+            </div>
+          </section>
+
+          <section id="calendar" class="screen">
+            <div class="header">
+              <div class="title" style="font-size: 24px; margin-bottom: 4px;">Your Cycle</div>
+              <div class="subtitle" id="nextPeriodText">Next estimated period: --</div>
+            </div>
+
+            <div class="card calendar-card">
+              <div class="month-nav">
+                <button class="month-btn" id="prevMonth">Prev</button>
+                <div class="month-title" id="monthTitle"></div>
+                <button class="month-btn" id="nextMonth">Next</button>
+              </div>
+              <div id="calendarGrid"></div>
+              <div class="legend">
+                <div class="legend-item"><span class="dot" style="background: var(--menstrual)"></span>Menstrual</div>
+                <div class="legend-item"><span class="dot" style="background: var(--follicular)"></span>Follicular</div>
+                <div class="legend-item"><span class="dot" style="background: var(--ovulation)"></span>Ovulation</div>
+                <div class="legend-item"><span class="dot" style="background: var(--luteal)"></span>Luteal</div>
+              </div>
+            </div>
+
+        <div class="card insight" id="insightCard"></div>
+        <div class="attribution">
+          <img
+            src="https://odphp.health.gov/sites/default/files/2019-12/MyHealthfinder_Logo_0.png"
+            alt="MyHealthfinder logo"
+          />
+          <div>
+            Content source:
+            <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
+              odphp.health.gov/myhealthfinder
+            </a>
+          </div>
+        </div>
+        <div class="note">Educational content only. This app does not provide medical diagnosis or treatment.</div>
+      </section>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Placeholder educational content.
+      // MyHealthfinder integration point:
+      // Replace this object with API-driven data from odphp.health.gov/myhealthfinder.
+      // Requirement: display the MyHealthfinder logo + link wherever content appears.
+      const PHASE_INFO = {
+        menstrual: {
+          title: "Menstrual Phase",
+          subtitle: "The period phase when the uterine lining is shedding.",
+          symptoms: ["Cramps", "Fatigue", "Lower back pain"],
+          mental: ["Mood shifts", "Irritability", "Need for rest"],
+          hormones: ["Estrogen and progesterone are low"],
+        },
+        follicular: {
+          title: "Follicular Phase",
+          subtitle: "The body prepares an egg for ovulation.",
+          symptoms: ["Energy increase", "Cervical mucus changes"],
+          mental: ["Motivation may rise", "Focus may improve"],
+          hormones: ["Estrogen rises"],
+        },
+        ovulation: {
+          title: "Ovulation",
+          subtitle: "An egg is released from the ovary.",
+          symptoms: ["Mild pelvic pain", "Increased libido"],
+          mental: ["Confidence may increase"],
+          hormones: ["LH surge, estrogen peaks"],
+        },
+        luteal: {
+          title: "Luteal Phase",
+          subtitle: "The body prepares for a possible pregnancy.",
+          symptoms: ["Breast tenderness", "Bloating", "Headaches"],
+          mental: ["Mood changes", "Stress sensitivity"],
+          hormones: ["Progesterone rises, estrogen varies"],
+        },
+      };
+
+      // Live API endpoint (direct) is blocked by CORS in browsers.
+      // Use the Vercel serverless proxy instead:
+      // https://YOUR-VERCEL-APP.vercel.app/api/myhealthfinder?type=topic
+      let myHealthfinderData = null;
+      let myHealthfinderLoaded = false;
+      let myHealthfinderError = null;
+
+      async function loadMyHealthfinderData() {
+        if (myHealthfinderLoaded) return myHealthfinderData;
+        myHealthfinderLoaded = true;
+        try {
+          const res = await fetch(
+            "/api/myhealthfinder?type=topic"
+          );
+          if (!res.ok) throw new Error("MyHealthfinder request failed");
+          const json = await res.json();
+          myHealthfinderData = json;
+          return myHealthfinderData;
+        } catch (err) {
+          myHealthfinderError = "Unable to load MyHealthfinder content right now.";
+          myHealthfinderData = null;
+          return null;
+        }
+      }
+
+      const COLORS = {
+        menstrual: "var(--menstrual)",
+        follicular: "var(--follicular)",
+        ovulation: "var(--ovulation)",
+        luteal: "var(--luteal)",
+      };
+
+      const CYCLE_LENGTH = 28;
+      const PERIOD_LENGTH = 5;
+
+      const welcome = document.getElementById("welcome");
+      const input = document.getElementById("lastPeriod");
+      const btn = document.getElementById("continueBtn");
+      const beginBtn = document.getElementById("beginBtn");
+      const onboarding = document.getElementById("onboarding");
+      const calendar = document.getElementById("calendar");
+      const grid = document.getElementById("calendarGrid");
+      const monthTitle = document.getElementById("monthTitle");
+      const nextPeriodText = document.getElementById("nextPeriodText");
+      const insightCard = document.getElementById("insightCard");
+      const prevMonth = document.getElementById("prevMonth");
+      const nextMonth = document.getElementById("nextMonth");
+
+      let lastPeriodDate = null;
+      let currentMonth = new Date();
+      currentMonth.setDate(1);
+
+      function parseMMDDYYYY(value) {
+        if (!/^\d{2}-\d{2}-\d{4}$/.test(value)) return null;
+        const [m, d, y] = value.split("-").map((v) => parseInt(v, 10));
+        const date = new Date(y, m - 1, d);
+        if (isNaN(date.getTime())) return null;
+        if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+          return null;
+        }
+        return date;
+      }
+
+      function formatISODate(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${m}-${d}-${y}`;
+      }
+
+      function getCycleDay(start, date) {
+        const a = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+        const b = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+        const diff = Math.floor((b - a) / 86400000);
+        if (diff < 0) return null;
+        return (diff % CYCLE_LENGTH) + 1;
+      }
+
+      function getPhase(start, date) {
+        const day = getCycleDay(start, date);
+        if (!day) return "menstrual";
+        if (day >= 1 && day <= PERIOD_LENGTH) return "menstrual";
+        if (day <= 13) return "follicular";
+        if (day === 14) return "ovulation";
+        return "luteal";
+      }
+
+      function buildMonthGrid(monthDate) {
+        const year = monthDate.getFullYear();
+        const month = monthDate.getMonth();
+        const first = new Date(year, month, 1);
+        const startWeekday = first.getDay();
+        const start = new Date(first);
+        start.setDate(start.getDate() - startWeekday);
+
+        const rows = [];
+        let cursor = new Date(start);
+        for (let w = 0; w < 6; w += 1) {
+          const row = [];
+          for (let d = 0; d < 7; d += 1) {
+            row.push(new Date(cursor));
+            cursor.setDate(cursor.getDate() + 1);
+          }
+          rows.push(row);
+        }
+        return rows;
+      }
+
+      function renderCalendar() {
+        grid.innerHTML = "";
+        const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
+        monthTitle.textContent = monthFormatter.format(currentMonth);
+
+        const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
+        const header = document.createElement("div");
+        header.className = "week-row";
+        weekDays.forEach((d) => {
+          const el = document.createElement("div");
+          el.className = "weekday";
+          el.textContent = d;
+          header.appendChild(el);
+        });
+        grid.appendChild(header);
+
+        const matrix = buildMonthGrid(currentMonth);
+        matrix.forEach((week) => {
+          const row = document.createElement("div");
+          row.className = "week-row";
+          week.forEach((date) => {
+            const cell = document.createElement("div");
+            cell.className = "day";
+            if (date.getMonth() !== currentMonth.getMonth()) {
+              cell.style.opacity = 0;
+              cell.textContent = "";
+            } else {
+              const phase = getPhase(lastPeriodDate, date);
+              cell.style.background = COLORS[phase];
+              cell.textContent = date.getDate();
+            }
+            row.appendChild(cell);
+          });
+          grid.appendChild(row);
+        });
+      }
+
+      function getMyHealthfinderTopicForPhase(phase, data) {
+        const list = data?.Result?.Resources?.Resource || [];
+        if (!list.length) return null;
+        const phaseIndex = {
+          menstrual: 2,
+          follicular: 0,
+          ovulation: 3,
+          luteal: 1,
+        };
+        const idx = phaseIndex[phase] ?? 0;
+        return list[idx % list.length];
+      }
+
+      async function renderInsight() {
+        const phase = getPhase(lastPeriodDate, new Date());
+        const info = PHASE_INFO[phase];
+        const data = await loadMyHealthfinderData();
+        const topic = getMyHealthfinderTopicForPhase(phase, data);
+
+        insightCard.innerHTML = `
+          <h3>${info.title}</h3>
+          <div style="color: var(--muted);">${info.subtitle}</div>
+          <div class="section">Common Symptoms</div>
+          <div>${info.symptoms.join(", ")}</div>
+          <div class="section">Mental Health Effects</div>
+          <div>${info.mental.join(", ")}</div>
+          <div class="section">Hormonal Changes</div>
+          <div>${info.hormones.join(", ")}</div>
+          ${
+            topic
+              ? `
+          <div class="section">MyHealthfinder: ${topic.Title}</div>
+          <div style="color: var(--muted);">${topic.MyHFDescription}</div>
+          <div style="margin-top: 6px;">
+            <a href="${topic.AccessibleVersion}" target="_blank" rel="noreferrer">Learn more</a>
+          </div>
+            `
+              : `
+          <div class="section">MyHealthfinder</div>
+          <div style="color: var(--muted);">${myHealthfinderError || "Unable to load topics right now."}</div>
+            `
+          }
+        `;
+      }
+
+      function renderNextPeriod() {
+        const next = new Date(lastPeriodDate);
+        next.setDate(next.getDate() + CYCLE_LENGTH);
+        nextPeriodText.textContent = `Next estimated period: ${formatISODate(next)}`;
+      }
+
+      function scheduleReminderMock(iso) {
+        console.log(`[HeyLucy] Scheduled reminder based on last period date: ${iso}`);
+      }
+
+      function formatMMDDYYYYInput(raw) {
+        const digits = raw.replace(/\D/g, "").slice(0, 8);
+        const parts = [];
+        if (digits.length >= 2) parts.push(digits.slice(0, 2));
+        else if (digits.length > 0) parts.push(digits);
+        if (digits.length >= 4) parts.push(digits.slice(2, 4));
+        else if (digits.length > 2) parts.push(digits.slice(2));
+        if (digits.length > 4) parts.push(digits.slice(4));
+        return parts.join("-");
+      }
+
+      beginBtn.addEventListener("click", () => {
+        welcome.classList.remove("active");
+        onboarding.classList.add("active");
+        input.focus();
+      });
+
+      input.addEventListener("input", (e) => {
+        const formatted = formatMMDDYYYYInput(e.target.value);
+        e.target.value = formatted;
+        btn.disabled = !parseMMDDYYYY(formatted);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          btn.click();
+        }
+      });
+
+      btn.addEventListener("click", () => {
+        const date = parseMMDDYYYY(input.value.trim());
+        if (!date) return;
+        lastPeriodDate = date;
+        onboarding.classList.remove("active");
+        calendar.classList.add("active");
+        renderCalendar();
+        renderInsight();
+        renderNextPeriod();
+        scheduleReminderMock(input.value.trim());
+      });
+
+      prevMonth.addEventListener("click", () => {
+        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+        renderCalendar();
+      });
+
+      nextMonth.addEventListener("click", () => {
+        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+        renderCalendar();
+      });
+    </script>
+  </body>
+</html>
