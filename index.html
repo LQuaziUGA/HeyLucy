@@ -418,6 +418,11 @@
             </div>
 
             <div class="card insight" id="insightCard"></div>
+            <div class="card" id="latestLogCard" style="margin-top: 12px; display: none;">
+              <div class="section" style="margin-top: 0;">Latest Log</div>
+              <div id="latestLogSummary" style="color: var(--muted); margin-top: 6px;"></div>
+              <button id="editLogBtn" class="btn" style="margin-top: 12px;">Edit Last Log</button>
+            </div>
             <div class="attribution">
               <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
                 <img
@@ -439,6 +444,10 @@
             <div class="title" style="font-size: 24px; margin-bottom: 4px;">Track</div>
             <div class="subtitle">Log symptoms and notes for today.</div>
             <div class="card">
+              <div class="section" style="margin-top: 0;">Period Start Date</div>
+              <input id="trackDate" class="input" placeholder="MM-DD-YYYY" inputmode="numeric" />
+              <div class="helper">Log the first day of bleeding to update your cycle.</div>
+
               <div class="section">Flow</div>
               <div class="flow-buttons">
                 <button class="flow-btn" type="button">Light</button>
@@ -464,7 +473,7 @@
               <div class="symptom-grid">
                 <label class="symptom">
                   <span>Cramp Pain</span>
-                  <select class="input">
+                  <select class="input" data-symptom="Cramp Pain">
                     <option value="">Select</option>
                     <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
@@ -472,7 +481,7 @@
                 </label>
                 <label class="symptom">
                   <span>Headaches</span>
-                  <select class="input">
+                  <select class="input" data-symptom="Headaches">
                     <option value="">Select</option>
                     <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
@@ -480,7 +489,7 @@
                 </label>
                 <label class="symptom">
                   <span>Sore Body</span>
-                  <select class="input">
+                  <select class="input" data-symptom="Sore Body">
                     <option value="">Select</option>
                     <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
@@ -488,7 +497,7 @@
                 </label>
                 <label class="symptom">
                   <span>Bloating</span>
-                  <select class="input">
+                  <select class="input" data-symptom="Bloating">
                     <option value="">Select</option>
                     <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
@@ -496,13 +505,15 @@
                 </label>
                 <label class="symptom">
                   <span>Fatigue</span>
-                  <select class="input">
+                  <select class="input" data-symptom="Fatigue">
                     <option value="">Select</option>
                     <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
                   </select>
                 </label>
               </div>
+
+              <button id="trackBtn" class="btn" style="margin-top: 16px;">Track</button>
             </div>
           </section>
 
@@ -623,13 +634,19 @@
       const monthTitle = document.getElementById("monthTitle");
       const nextPeriodText = document.getElementById("nextPeriodText");
       const insightCard = document.getElementById("insightCard");
+      const latestLogCard = document.getElementById("latestLogCard");
+      const latestLogSummary = document.getElementById("latestLogSummary");
+      const editLogBtn = document.getElementById("editLogBtn");
       const prevMonth = document.getElementById("prevMonth");
       const nextMonth = document.getElementById("nextMonth");
       const tabs = Array.from(document.querySelectorAll(".tab"));
+      const trackDateInput = document.getElementById("trackDate");
+      const trackBtn = document.getElementById("trackBtn");
 
       let lastPeriodDate = null;
       let currentMonth = new Date();
       currentMonth.setDate(1);
+      let latestLog = null;
 
       function parseMMDDYYYY(value) {
         if (!/^\d{2}-\d{2}-\d{4}$/.test(value)) return null;
@@ -814,6 +831,22 @@
         nextPeriodText.textContent = `Next estimated period: ${formatISODate(next)}`;
       }
 
+      function renderLatestLog() {
+        if (!latestLog || !latestLogCard || !latestLogSummary) {
+          if (latestLogCard) latestLogCard.style.display = "none";
+          return;
+        }
+
+        const parts = [];
+        parts.push(`Logged period start: ${latestLog.date}`);
+        if (latestLog.flow) parts.push(`Flow: ${latestLog.flow}`);
+        if (latestLog.mood) parts.push(`Mood: ${latestLog.mood}`);
+        if (latestLog.symptoms.length) parts.push(`Symptoms: ${latestLog.symptoms.join(", ")}`);
+
+        latestLogSummary.textContent = parts.join(" • ");
+        latestLogCard.style.display = "block";
+      }
+
       function setActiveTab(targetId) {
         tabs.forEach((tab) => {
           tab.classList.toggle("active", tab.dataset.target === targetId);
@@ -839,6 +872,7 @@
           renderCalendar();
           renderInsight();
           renderNextPeriod();
+          renderLatestLog();
         }
       }
 
@@ -864,6 +898,28 @@
         else if (digits.length > 2) parts.push(digits.slice(2));
         if (digits.length > 4) parts.push(digits.slice(4));
         return parts.join("-");
+      }
+
+      function getActiveFlow() {
+        const active = document.querySelector(".flow-btn.active");
+        return active ? active.textContent.trim() : "";
+      }
+
+      function getActiveMood() {
+        const active = document.querySelector(".mood-btn.active");
+        return active ? active.textContent.trim() : "";
+      }
+
+      function getSymptomRatings() {
+        const selects = Array.from(document.querySelectorAll(".symptom select"));
+        return selects
+          .map((select) => {
+            const label = select.getAttribute("data-symptom");
+            const value = select.value;
+            if (!value || !label) return null;
+            return `${label} ${value}/10`;
+          })
+          .filter(Boolean);
       }
 
       function goToWelcome() {
@@ -898,6 +954,50 @@
         showScreen("calendar");
         scheduleReminderMock(input.value.trim());
       });
+
+      if (trackDateInput) {
+        trackDateInput.addEventListener("input", (e) => {
+          const formatted = formatMMDDYYYYInput(e.target.value);
+          e.target.value = formatted;
+        });
+      }
+
+      if (trackBtn) {
+        trackBtn.addEventListener("click", () => {
+          const dateValue = trackDateInput ? trackDateInput.value.trim() : "";
+          const parsed = parseMMDDYYYY(dateValue);
+          if (!parsed) {
+            alert("Please enter a valid period start date (MM-DD-YYYY).");
+            return;
+          }
+
+          lastPeriodDate = parsed;
+          latestLog = {
+            date: dateValue,
+            flow: getActiveFlow(),
+            mood: getActiveMood(),
+            symptoms: getSymptomRatings(),
+          };
+
+          showScreen("calendar");
+          scheduleReminderMock(dateValue);
+          alert("Cycle date logged successfully.");
+        });
+      }
+
+      if (editLogBtn) {
+        editLogBtn.addEventListener("click", () => {
+          if (!latestLog) {
+            alert("No log to edit yet.");
+            return;
+          }
+          showScreen("track");
+          if (trackDateInput) {
+            trackDateInput.value = latestLog.date || "";
+            trackDateInput.focus();
+          }
+        });
+      }
 
       prevMonth.addEventListener("click", () => {
         currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
