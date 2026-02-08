@@ -263,10 +263,12 @@
 
         <div class="card insight" id="insightCard"></div>
         <div class="attribution">
-          <img
-            src="https://odphp.health.gov/sites/default/files/2019-12/MyHealthfinder_Logo_0.png"
-            alt="MyHealthfinder logo"
-          />
+          <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
+            <img
+              src="https://odphp.health.gov/sites/default/files/2020-01/myhealthfinder_logo.jpg"
+              alt="MyHealthfinder logo"
+            />
+          </a>
           <div>
             Content source:
             <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noreferrer">
@@ -318,18 +320,22 @@
 
       // Live API endpoint (direct) is blocked by CORS in browsers.
       // Use the Vercel serverless proxy instead:
-      // https://YOUR-VERCEL-APP.vercel.app/api/myhealthfinder?type=topic
+      // https://YOUR-VERCEL-APP.vercel.app/api/myhealthfinder?endpoint=itemlist&type=topic
       let myHealthfinderData = null;
       let myHealthfinderLoaded = false;
       let myHealthfinderError = null;
+      const PHASE_TOPIC_IDS = {
+        menstrual: "30540", // Get Your Well-Woman Visit Every Year
+        follicular: "30539", // Eat Healthy
+        ovulation: "30547", // Get Active
+        luteal: "30560", // Manage Stress
+      };
 
       async function loadMyHealthfinderData() {
         if (myHealthfinderLoaded) return myHealthfinderData;
         myHealthfinderLoaded = true;
         try {
-          const res = await fetch(
-            "/api/myhealthfinder?type=topic"
-          );
+          const res = await fetch("/api/myhealthfinder?endpoint=itemlist&type=topic");
           if (!res.ok) throw new Error("MyHealthfinder request failed");
           const json = await res.json();
           myHealthfinderData = json;
@@ -462,16 +468,17 @@
       }
 
       function getMyHealthfinderTopicForPhase(phase, data) {
-        const list = data?.Result?.Resources?.Resource || [];
+        const list = data?.Result?.Items?.Item || [];
         if (!list.length) return null;
-        const phaseIndex = {
-          menstrual: 2,
-          follicular: 0,
-          ovulation: 3,
-          luteal: 1,
-        };
-        const idx = phaseIndex[phase] ?? 0;
-        return list[idx % list.length];
+        const targetId = PHASE_TOPIC_IDS[phase];
+        const match = list.find((item) => item.Id === targetId);
+        return match || list[0];
+      }
+
+      async function loadMyHealthfinderTopicDetails(topicId) {
+        const res = await fetch(`/api/myhealthfinder?endpoint=topicsearch&topicId=${topicId}`);
+        if (!res.ok) throw new Error("MyHealthfinder topic request failed");
+        return res.json();
       }
 
       async function renderInsight() {
@@ -479,6 +486,27 @@
         const info = PHASE_INFO[phase];
         const data = await loadMyHealthfinderData();
         const topic = getMyHealthfinderTopicForPhase(phase, data);
+        let topicDetail = null;
+
+        if (topic?.Id) {
+          try {
+            const detailData = await loadMyHealthfinderTopicDetails(topic.Id);
+            const resource = detailData?.Result?.Resources?.Resource || null;
+            topicDetail = Array.isArray(resource) ? resource[0] : resource;
+          } catch (err) {
+            myHealthfinderError = "Unable to load MyHealthfinder topic details.";
+          }
+        }
+
+        const detailTitle = topicDetail?.Title || topic?.Title;
+        const detailDescription =
+          topicDetail?.MyHFDescription ||
+          topicDetail?.FullSummary ||
+          topicDetail?.Summary ||
+          null;
+        const detailLink = topicDetail?.AccessibleVersion || null;
+        const detailUpdated =
+          topicDetail?.LastUpdate || topicDetail?.LastUpdated || topicDetail?.LastModified || null;
 
         insightCard.innerHTML = `
           <h3>${info.title}</h3>
@@ -492,11 +520,24 @@
           ${
             topic
               ? `
-          <div class="section">MyHealthfinder: ${topic.Title}</div>
-          <div style="color: var(--muted);">${topic.MyHFDescription}</div>
-          <div style="margin-top: 6px;">
-            <a href="${topic.AccessibleVersion}" target="_blank" rel="noreferrer">Learn more</a>
-          </div>
+          <div class="section">MyHealthfinder: ${detailTitle || "Topic"}</div>
+          ${
+            detailDescription
+              ? `<div style="color: var(--muted);">${detailDescription}</div>`
+              : `<div style="color: var(--muted);">Open the topic for details.</div>`
+          }
+          ${
+            detailUpdated
+              ? `<div style="margin-top: 6px; color: var(--muted);">Last updated: ${detailUpdated}</div>`
+              : ""
+          }
+          ${
+            detailLink
+              ? `<div style="margin-top: 6px;">
+            <a href="${detailLink}" target="_blank" rel="noreferrer">Learn more</a>
+          </div>`
+              : ""
+          }
             `
               : `
           <div class="section">MyHealthfinder</div>

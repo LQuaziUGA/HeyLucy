@@ -9,10 +9,28 @@ export default async function handler(req, res) {
       return;
     }
 
-    const type = req.query.type || 'topic';
-    const url = `https://odphp.health.gov/myhealthfinder/api/v4/itemlist.json?Type=${encodeURIComponent(
-      type
-    )}`;
+    const endpoint = (req.query.endpoint || 'itemlist').toString();
+    const lang = req.query.lang ? `&Lang=${encodeURIComponent(req.query.lang)}` : '';
+
+    let url = '';
+    if (endpoint === 'itemlist') {
+      const type = req.query.type || 'topic';
+      url = `https://odphp.health.gov/myhealthfinder/api/v4/itemlist.json?Type=${encodeURIComponent(
+        type
+      )}${lang}`;
+    } else if (endpoint === 'topicsearch') {
+      const topicId = req.query.topicId;
+      if (!topicId) {
+        res.status(400).json({ error: 'Missing topicId' });
+        return;
+      }
+      url = `https://odphp.health.gov/myhealthfinder/api/v4/topicsearch.json?TopicId=${encodeURIComponent(
+        topicId
+      )}${lang}`;
+    } else {
+      res.status(400).json({ error: 'Unsupported endpoint' });
+      return;
+    }
 
     const response = await fetch(url);
     if (!response.ok) {
