@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HeyLucy! Project Log</title>
+    <style>
+      body {
+        font-family: "Georgia", "Times New Roman", serif;
+        color: #222;
+        margin: 32px;
+        line-height: 1.5;
+      }
+      h1, h2, h3 {
+        margin: 0 0 8px;
+      }
+      h1 { font-size: 28px; }
+      h2 { font-size: 20px; margin-top: 24px; }
+      h3 { font-size: 16px; margin-top: 16px; }
+      .section { margin-top: 16px; }
+      .muted { color: #555; }
+      ul { margin: 6px 0 0 18px; }
+      .block { margin-top: 8px; }
+      .label { font-weight: 700; }
+      .divider { margin: 18px 0; border-top: 1px solid #ddd; }
+    </style>
+  </head>
+  <body>
+    <h1>UGAHacks Project Log</h1>
+
+    <h2>Project Information</h2>
+    <div class="block"><span class="label">Project Title:</span> HeyLucy!</div>
+    <div class="block"><span class="label">Team Members:</span> Leen Quazi, Griselda Castro, Jazmin Sanchez</div>
+    <div class="block"><span class="label">Tier Level:</span> Intermediate</div>
+    <div class="block"><span class="label">Project Description:</span>
+      HeyLucy! is a women’s health MVP focused on menstrual cycle tracking, phase‑based education, and wellness resources. The core experience is a calendar that predicts phases based on logged period start dates. Users can log new cycle starts to update predictions. Educational content is non‑diagnostic and is enriched with MyHealthfinder public health content.
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>Friday</h2>
+    <div class="block muted">Kickoff day. We focused on brainstorming, scope, and product direction rather than implementation.</div>
+
+    <h3>Goals</h3>
+    <ul>
+      <li>Define the problem space and what Lucy should do for users.</li>
+      <li>Brainstorm features beyond tracking (care navigation, screening support).</li>
+      <li>Outline what could realistically fit into an MVP.</li>
+    </ul>
+
+    <h3>Progress</h3>
+    <div class="block">
+      We did not code much on Friday. Instead, we explored a broader vision for HeyLucy!, including an AI‑assisted health navigator that could connect users to relevant providers and specialists based on their tracking data. We also discussed a guided “at‑home” education section (tests, prevention, and learning) as a pre‑step before booking care. Another idea was a doctor‑visit survey that users could complete and export as a PDF report, including their cycle history and any abnormalities detected from tracking and public health research. We also planned reminders to prompt users to log their period start if it didn’t occur near the predicted date, so Lucy stays accurate and relevant.
+    </div>
+
+    <h3>Challenges</h3>
+    <div class="block">
+      1. The initial scope was too large for the hackathon timeframe.
+      <div class="muted">Solution: Agreed to simplify into a focused MVP while preserving the long‑term product vision.</div>
+    </div>
+
+    <h3>Learning</h3>
+    <ul>
+      <li>Clarified which features are MVP‑critical versus long‑term roadmap.</li>
+      <li>Mapped a user‑centric flow for cycle tracking and care support.</li>
+    </ul>
+
+    <h3>AI Usage (if any)</h3>
+    <div class="block">
+      <div><span class="label">Tool used:</span> AI assistant</div>
+      <div><span class="label">Purpose:</span> Research and debugging support.</div>
+      <div><span class="label">How it contributed to learning:</span> Helped explore edge cases in date logic and validate API integration steps.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>Saturday</h2>
+    <div class="block muted">Main build day. We started coding and narrowed the scope to a working MVP.</div>
+
+    <h3>Goals</h3>
+    <ul>
+      <li>Implement the core tracking UI (calendar + logging).</li>
+      <li>Integrate a credible public health data source.</li>
+      <li>Add a simple resources hub to improve usefulness.</li>
+    </ul>
+
+    <h3>Progress</h3>
+    <div class="block">
+      We built the core UI: onboarding, calendar, Track tab, and Resources tab. We switched the health content source from CDC to MyHealthfinder (publicly accessible) and added a Vercel proxy to bypass CORS. We also added video thumbnails for education content and ensured attribution requirements were met.
+    </div>
+
+    <h3>Challenges</h3>
+    <div class="block">
+      1. The original feature set had to be reduced due to time and complexity.
+      <div class="muted">Solution: Focused on a stable MVP with cycle logging, calendar prediction, and educational content.</div>
+    </div>
+    <div class="block">
+      2. Firebase Functions required a paid Blaze plan, which introduced unexpected costs for a hackathon MVP.
+      <div class="muted">Solution: Switched to Vercel serverless functions for the proxy and free deployment.</div>
+    </div>
+    <div class="block">
+      3. MyHealthfinder API blocked by CORS in browser.
+      <div class="muted">Solution: Implemented a Vercel serverless proxy and added caching + rate limits.</div>
+    </div>
+    <div class="block">
+      4. Deployment issues (missing root `index.html`, cached builds, and a JS syntax error).
+      <div class="muted">Solution: Re‑synced the repo with a clean clone, fixed the syntax error, and redeployed.</div>
+    </div>
+
+    <h3>Learning</h3>
+    <ul>
+      <li>How to safely reduce scope while protecting core UX value.</li>
+      <li>Serverless proxy patterns for public APIs.</li>
+      <li>Static deployment workflows on Vercel.</li>
+    </ul>
+
+    <h3>AI Usage (if any)</h3>
+    <div class="block">
+      <div><span class="label">Tool used:</span> AI assistant</div>
+      <div><span class="label">Purpose:</span> Debugging and API integration guidance.</div>
+      <div><span class="label">How it contributed to learning:</span> Clarified CORS constraints and helped plan a lightweight serverless proxy.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>Sunday</h2>
+    <div class="block muted">Finalization day. We focused on documentation and submission readiness.</div>
+
+    <h3>Goals</h3>
+    <ul>
+      <li>Finalize documentation and submission assets.</li>
+      <li>Verify the deployed build and confirm core flow stability.</li>
+      <li>Prepare for final submission.</li>
+    </ul>
+
+    <h3>Progress</h3>
+    <div class="block">
+      We finalized the project log, verified the live build, and documented the MVP’s capabilities and limitations for submission.
+    </div>
+
+    <h3>Challenges</h3>
+    <div class="block">
+      1. Time constraints for final polish and submission readiness.
+      <div class="muted">Solution: Prioritized documentation and core user flow verification.</div>
+    </div>
+
+    <h3>Learning</h3>
+    <ul>
+      <li>Managing multiple period logs for accurate predictions.</li>
+      <li>Improved UI/UX flow for logging and confirmations.</li>
+    </ul>
+
+    <h3>AI Usage (if any)</h3>
+    <div class="block">
+      <div><span class="label">Tool used:</span> AI assistant</div>
+      <div><span class="label">Purpose:</span> Debugging assistance only.</div>
+      <div><span class="label">How it contributed to learning:</span> Helped trace a syntax error and validate log‑based phase calculations.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>Submission Checklist</h2>
+    <ul>
+      <li>Project GitHub Repo: <span class="muted">LQuaziUGA/HeyLucy</span></li>
+      <li>Readme file (summary of project log)</li>
+      <li>Completed Project Log as PDF</li>
+      <li>Live Project Site (optional): <span class="muted">https://hey-lucy.vercel.app/</span></li>
+    </ul>
+  </body>
+</html>
