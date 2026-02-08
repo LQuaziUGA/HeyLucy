@@ -602,6 +602,13 @@
           mental: ["Mood changes", "Stress sensitivity"],
           hormones: ["Progesterone rises, estrogen varies"],
         },
+        unknown: {
+          title: "Phase Information",
+          subtitle: "Log a period start date to see phase-based insights.",
+          symptoms: ["Not enough data yet"],
+          mental: ["Not enough data yet"],
+          hormones: ["Not enough data yet"],
+        },
       };
 
       const COLORS = {
@@ -609,6 +616,7 @@
         follicular: "var(--follicular)",
         ovulation: "var(--ovulation)",
         luteal: "var(--luteal)",
+        unknown: "transparent",
       };
 
       const CYCLE_LENGTH = 28;
@@ -644,6 +652,7 @@
       const trackBtn = document.getElementById("trackBtn");
 
       let lastPeriodDate = null;
+      let periodLogs = [];
       let currentMonth = new Date();
       currentMonth.setDate(1);
       let latestLog = null;
@@ -676,11 +685,32 @@
 
       function getPhase(start, date) {
         const day = getCycleDay(start, date);
-        if (!day) return "menstrual";
+        if (!day) return "unknown";
         if (day >= 1 && day <= PERIOD_LENGTH) return "menstrual";
         if (day <= 13) return "follicular";
         if (day === 14) return "ovulation";
         return "luteal";
+      }
+
+      function getReferenceLogDate(date) {
+        if (!periodLogs.length) return null;
+        const target = date.getTime();
+        let candidate = null;
+        periodLogs.forEach((d) => {
+          if (d.getTime() <= target) {
+            if (!candidate || d.getTime() > candidate.getTime()) {
+              candidate = d;
+            }
+          }
+        });
+        return candidate;
+      }
+
+      function getPhaseForDate(date) {
+        const ref = getReferenceLogDate(date);
+        if (!ref) return "unknown";
+        return getPhase(ref, date);
+      }
       }
 
       function buildMonthGrid(monthDate) {
@@ -767,8 +797,12 @@
               cell.style.opacity = 0;
               cell.textContent = "";
             } else {
-              const phase = getPhase(lastPeriodDate, date);
-              cell.style.background = COLORS[phase];
+              const phase = getPhaseForDate(date);
+              if (phase !== "unknown") {
+                cell.style.background = COLORS[phase];
+              } else {
+                cell.style.background = "transparent";
+              }
               cell.textContent = date.getDate();
             }
             row.appendChild(cell);
@@ -778,14 +812,16 @@
       }
 
       async function renderInsight() {
-        const phase = getPhase(lastPeriodDate, new Date());
+        const phase = getPhaseForDate(new Date());
         const info = PHASE_INFO[phase];
         const topicId = PHASE_TOPIC_IDS[phase];
         let topicDetail = null;
-        try {
-          topicDetail = await loadMyHealthfinderTopic(topicId);
-        } catch (err) {
-          topicDetail = null;
+        if (topicId) {
+          try {
+            topicDetail = await loadMyHealthfinderTopic(topicId);
+          } catch (err) {
+            topicDetail = null;
+          }
         }
         const detailTitle = topicDetail?.Title || "MyHealthfinder Topic";
         const detailLink = topicDetail?.AccessibleVersion || null;
@@ -804,7 +840,9 @@
           <div class="section">Hormonal Changes</div>
           <div>${info.hormones.join(", ")}</div>
 
-          <div class="section">MyHealthfinder: ${detailTitle}</div>
+          ${
+            topicId
+              ? `<div class="section">MyHealthfinder: ${detailTitle}</div>
           ${
             summaryLines.length
               ? `<div style="color: var(--muted);">${summaryLines.join(" ")}</div>`
@@ -821,11 +859,18 @@
             <a href="${detailLink}" target="_blank" rel="noreferrer">Learn more</a>
           </div>`
               : ""
+          }`
+              : `<div class="section">MyHealthfinder</div>
+          <div style="color: var(--muted);">Log a period start date to see related content.</div>`
           }
         `;
       }
 
       function renderNextPeriod() {
+        if (!lastPeriodDate) {
+          nextPeriodText.textContent = "Next estimated period: --";
+          return;
+        }
         const next = new Date(lastPeriodDate);
         next.setDate(next.getDate() + CYCLE_LENGTH);
         nextPeriodText.textContent = `Next estimated period: ${formatISODate(next)}`;
@@ -951,6 +996,7 @@
         const date = parseMMDDYYYY(input.value.trim());
         if (!date) return;
         lastPeriodDate = date;
+        periodLogs = [date];
         showScreen("calendar");
         scheduleReminderMock(input.value.trim());
       });
@@ -972,6 +1018,10 @@
           }
 
           lastPeriodDate = parsed;
+          const exists = periodLogs.some((d) => d.getTime() === parsed.getTime());
+          if (!exists) {
+            periodLogs = [...periodLogs, parsed].sort((a, b) => a.getTime() - b.getTime());
+          }
           latestLog = {
             date: dateValue,
             flow: getActiveFlow(),
